@@ -17,8 +17,8 @@ jobs:
           npm install
       - docker/setup-buildx-action:  # Set up Docker Buildx for building images
           version: "latest"
-      - docker/build:
-          path: .  # Build image using the Dockerfile in the root of the repo
+      #- docker/build:
+          #path: .  # Build image using the Dockerfile in the root of the repo
           tag: ramdanse8/build-and-push:${12341234}  # Tag image with commit SHA
       - docker/login:
           username: $DOCKER_USERNAME  # Docker Hub username (set as environment variable in CircleCI)
