@@ -19,12 +19,12 @@ jobs:
       #    version: "latest"
       #- docker/build:
           #path: .  # Build image using the Dockerfile in the root of the repo
-    tag: ramdanse8/build-and-push:${12341234}  # Tag image with commit SHA
-      - docker/login:
-          username: $DOCKER_USERNAME  # Docker Hub username (set as environment variable in CircleCI)
-          password: $DOCKER_PASSWORD  # Docker Hub password (set as environment variable in CircleCI)
-      - docker/push:
-          image: ramdanse8/build-and-push:${12341234}  # Push image to Docker Hub with commit SHA as tag
+      tag: ramdanse8/build-and-push:${12341234}  # Tag image with commit SHA
+        - docker/login:
+            username: $DOCKER_USERNAME  # Docker Hub username (set as environment variable in CircleCI)
+            password: $DOCKER_PASSWORD  # Docker Hub password (set as environment variable in CircleCI)
+        - docker/push:
+            image: ramdanse8/build-and-push:${12341234}  # Push image to Docker Hub with commit SHA as tag
   test:
     docker: 
       - image: cimg/node:16.10
