@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   node: circleci/node@5.0.1
-  docker: circleci/docker@2.1.4
+  docker: circleci/docker@1.4.0
 
 jobs:
   build:
@@ -15,18 +15,8 @@ jobs:
       - run: |
           echo "Install dependencies"
           npm install
-      #- docker/setup-buildx-action:  # Set up Docker Buildx for building images
-      #    version: "latest"
-      #- docker/build:
-          #path: .  # Build image using the Dockerfile in the root of the repo
-  tag: ramdanse8/build-and-push:${12341234}  # Tag image with commit SHA
-    - docker/login:
-        username: $DOCKER_USERNAME  # Docker Hub username (set as environment variable in CircleCI)
-        password: $DOCKER_PASSWORD  # Docker Hub password (set as environment variable in CircleCI)
-    - docker/push:
-        image: ramdanse8/build-and-push:${12341234}  # Push image to Docker Hub with commit SHA as tag
   test:
-    docker: 
+    docker:
       - image: cimg/node:16.10
     steps:
       - checkout
@@ -35,12 +25,33 @@ jobs:
       - run: |
           echo "Running tests"
           npm run test
-  
+  publish:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - setup_remote_docker
+      - docker/check:
+          docker-username: DOCKER_LOGIN
+          docker-password: DOCKER_PASSWORD
+      - docker/build:
+          image: ramdanse8/build-and-push
+      - docker/push:
+          image: ramdanse8/build-and-push
+      - run: |
+          echo "Publishing image to DockerHub"
+
 workflows:
   simple_workflow:
     jobs:
       - build
       - test:
-          requires: 
+          requires:
             - build
-      
+      - publish:
+          context:
+            - build-env-vars
+            - docker-hub-creds
+          requires:
+            - build
+            - test
