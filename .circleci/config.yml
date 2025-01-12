@@ -6,12 +6,12 @@ orbs:
   docker: circleci/docker@2.1.4
   docker-publish: circleci/docker-publish@0.1.7
     environment:
-      IMAGE_NAME: ndukwearm19docker/docker-node-app
-      docker: 
-        — image: myassignment:latest
-      auth:
-        username: $DOCKERHUB_USERNAME
-        password: $DOCKERHUB_PASSWORD
+      IMAGE_NAME: 
+        docker: 
+          — image: myassignment:latest
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
 jobs:
   build:
     docker:
