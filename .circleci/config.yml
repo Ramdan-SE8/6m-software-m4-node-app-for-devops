@@ -4,18 +4,14 @@ orbs:
   node: circleci/node@5.0.1
   heroku: circleci/heroku@2.0.0
   docker: circleci/docker@2.1.4
-
-executors:
-  docker-publisher: 
-  environment:
-    IMAGE_NAME: ndukwearm19docker/docker-node-app
-    docker: # Each job requires specifying an executor
-  # (either docker, macos, or machine), see
-      — image: circleci/node:latest
+  docker-publish: circleci/docker-publish@0.1.7
+    environment:
+      IMAGE_NAME: ndukwearm19docker/docker-node-app
+      docker: 
+        — image: myassignment:latest
       auth:
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_PASSWORD
-
 jobs:
   build:
     docker:
@@ -52,7 +48,8 @@ jobs:
             heroku container:push web -a ramdan-su-devops
             heroku container:release web -a ramdan-su-devops
   publishLatestToHub:
-    executor: docker-publisher
+    docker-publish:
+      - image: cimg/node:16.10
     steps: 
       — checkout
       — setup_remote_docker
@@ -74,6 +71,8 @@ workflows:
       - deploy:
           requires:
             - test
-      - publishLatestToHub:
+      - docker-publish/publish:
+          image: my/image
+          tag: my_tag
           requires:
             - test
