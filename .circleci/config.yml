@@ -2,10 +2,8 @@ version: 2.1
 
 orbs:
   node: circleci/node@5.0.1
-  heroku: circleci/heroku@2.0.0
   docker: circleci/docker@2.1.4
-  docker-publish: circleci/docker-publish@0.1.7
-    
+
 jobs:
   build:
     docker:
@@ -17,6 +15,16 @@ jobs:
       - run: |
           echo "Install dependencies"
           npm install
+      - docker/setup-buildx-action:  # Set up Docker Buildx for building images
+          version: "latest"
+      - docker/build:
+          path: .  # Build image using the Dockerfile in the root of the repo
+          tag: ramdanse8/build-and-push:${12341234}  # Tag image with commit SHA
+      - docker/login:
+          username: $DOCKER_USERNAME  # Docker Hub username (set as environment variable in CircleCI)
+          password: $DOCKER_PASSWORD  # Docker Hub password (set as environment variable in CircleCI)
+      - docker/push:
+          image: ramdanse8/build-and-push:${12341234}  # Push image to Docker Hub with commit SHA as tag
   test:
     docker: 
       - image: cimg/node:16.10
@@ -27,41 +35,7 @@ jobs:
       - run: |
           echo "Running tests"
           npm run test
-  deploy:
-    docker:
-      - image: cimg/node:16.10
-    steps:
-      - setup_remote_docker
-      - heroku/install
-      - checkout
-      - run:
-          name: Heroku Container Push
-          command: |
-            heroku container:login
-            heroku stack:set container -a ramdan-su-devops
-            heroku container:push web -a ramdan-su-devops
-            heroku container:release web -a ramdan-su-devops
-  publishLatestToHub:
-    environment:
-        IMAGE_NAME: 
-          docker: 
-            — image: myassignment:latest
-          auth:
-            username: $DOCKERHUB_USERNAME
-            password: $DOCKERHUB_PASSWORD
-    docker-publish:
-      - image: cimg/node:16.10
-    steps: 
-      — checkout
-      — setup_remote_docker
-      — run: 
-          name: Publish Docker Image to Docker Hub
-          command: |
-            echo “$DOCKERHUB_PASSWORD”
-            docker login -u “$DOCKERHUB_USERNAME” — password-stdin
-            docker build -t $IMAGE_NAME .docker push $IMAGE_NAME:latest
-
-
+  
 workflows:
   simple_workflow:
     jobs:
@@ -69,11 +43,4 @@ workflows:
       - test:
           requires: 
             - build
-      - deploy:
-          requires:
-            - test
-      - docker-publish/publish:
-          image: my/image
-          tag: my_tag
-          requires:
-            - test
+      
