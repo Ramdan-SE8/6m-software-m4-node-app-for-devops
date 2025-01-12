@@ -44,7 +44,7 @@ jobs:
 workflows:
   simple_workflow:
     jobs:
-      - build
+      - build:
           filters:
             branches:
               only: 
@@ -57,12 +57,13 @@ workflows:
           requires:
             - build
       - publish:
+          filters:
+            branches:
+              only: 
+                -release
           context:
             - build-env-vars
             - docker-hub-creds
-          filters:
-            branches:
-              only: release
           requires:
             - build
             - test
