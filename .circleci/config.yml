@@ -5,13 +5,7 @@ orbs:
   heroku: circleci/heroku@2.0.0
   docker: circleci/docker@2.1.4
   docker-publish: circleci/docker-publish@0.1.7
-    environment:
-      IMAGE_NAME: 
-        docker: 
-          — image: myassignment:latest
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
+    
 jobs:
   build:
     docker:
@@ -48,6 +42,13 @@ jobs:
             heroku container:push web -a ramdan-su-devops
             heroku container:release web -a ramdan-su-devops
   publishLatestToHub:
+    environment:
+        IMAGE_NAME: 
+          docker: 
+            — image: myassignment:latest
+          auth:
+            username: $DOCKERHUB_USERNAME
+            password: $DOCKERHUB_PASSWORD
     docker-publish:
       - image: cimg/node:16.10
     steps: 
