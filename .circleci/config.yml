@@ -32,7 +32,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - docker/check:
-          docker-username: DOCKER_LOGIN
+          docker-username: DOCKER_USERNAME
           docker-password: DOCKER_PASSWORD
       - docker/build:
           image: ramdanse8/build-and-push
