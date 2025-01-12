@@ -36,7 +36,7 @@ jobs:
           docker-username: DOCKER_USERNAME
           docker-password: DOCKER_PASSWORD
       - docker/build:
-          image: ramdanse8/build-and-push
+          image: ramdanse8/Assignment4.6
       - docker/push:
           image: ramdanse8/build-and-push
       - run: |
@@ -59,7 +59,7 @@ jobs:
 workflows:
   simple_workflow:
     jobs:
-      - build:
+      - build
           filters:
             branches:
               only: 
