@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   node: circleci/node@5.0.1
   docker: circleci/docker@1.4.0
+  heroku: circleci/heroku@2.0.0
 
 jobs:
   build:
@@ -40,6 +41,20 @@ jobs:
           image: ramdanse8/build-and-push
       - run: |
           echo "Publishing image to DockerHub"
+  deploy:
+    docker:
+      - image: cimg/node:16.10
+    steps:
+      - setup_remote_docker
+      - heroku/install
+      - checkout
+      - run:
+          name: Heroku Container Push
+          command: |
+            heroku container:login
+            heroku stack:set container -a ramdan-su-devops
+            heroku container:push web -a ramdan-su-devops
+            heroku container:release web -a ramdan-su-devops
 
 workflows:
   simple_workflow:
@@ -67,3 +82,10 @@ workflows:
           requires:
             - build
             - test
+      - deploy:
+          filters:
+            branches:
+              only: 
+                -release
+        requires:
+          - test
